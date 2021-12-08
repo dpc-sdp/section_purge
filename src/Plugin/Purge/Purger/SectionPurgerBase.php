@@ -3,15 +3,16 @@
 namespace Drupal\section_purger\Plugin\Purge\Purger;
 
 use Drupal\Core\Utility\Token;
-use GuzzleHttp\ClientInterface;
-use Drupal\section_purger\Entity\Hash;
+use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
+use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgerBase;
 use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
+use Drupal\section_purger\Entity\Hash;
 use Drupal\section_purger\Entity\SectionPurgerSettings;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\section_purger\Plugin\Purge\TagsHeader\CacheTagsHeaderValue;
-use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ConnectException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Abstract base class for HTTP based configurable purgers.
@@ -94,7 +95,7 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface
     try {
         $response = $this->client->request($this->settings->request_method, $uri, $opt);
         $invalidation->setState(InvalidationInterface::SUCCEEDED);
-    } catch (\GuzzleHttp\Exception\ConnectException $e) {
+    } catch (ConnectException $e) {
         $invalidation->setState(InvalidationInterface::FAILED);
         $this->logger->critical("http request for ". $uri ." responded with ". $e->getMessage()); //Usually timeouts or other connection issues.
     } catch (\Exception $e) {
