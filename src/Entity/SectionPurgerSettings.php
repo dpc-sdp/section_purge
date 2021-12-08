@@ -14,6 +14,35 @@ use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsInterface;
  *   config_prefix = "settings",
  *   static_cache = TRUE,
  *   entity_keys = {"id" = "id"},
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *     "description",
+ *     "name",
+ *     "invalidationtype",
+ *     "hostname",
+ *     "sitename",
+ *     "port",
+ *     "path",
+ *     "account",
+ *     "application",
+ *     "environmentname",
+ *     "username",
+ *     "password",
+ *     "request_method",
+ *     "scheme",
+ *     "verify",
+ *     "varnishname",
+ *     "headers",
+ *     "body",
+ *     "body_content_type",
+ *     "runtime_measurement",
+ *     "timeout",
+ *     "connect_timeout",
+ *     "cooldown_time",
+ *     "max_requests",
+ *     "http_errors"
+ *   },
  * )
  */
 class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettingsInterface
@@ -54,6 +83,7 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
      * @var string
      */
     public $varnishname = 'varnish';
+
     /**
      * The host or IP-address to connect to.
      *
@@ -82,13 +112,13 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
      */
     public $application = 100;
 
-
     /**
      * Section environment name i.e. Production, Staging, etc.
      *
      * @var string
      */
     public $environmentname = 'Production';
+
     /**
      * Section Username.
      *
