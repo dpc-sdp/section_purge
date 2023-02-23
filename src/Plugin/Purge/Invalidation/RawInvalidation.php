@@ -6,9 +6,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
 
 /**
- * Describes invalidation by raw varnish ban expression.
- *
- * E.g.: 'req.url ~ \.(jpg|jpeg|css|js)$'.
+ * Describes invalidation by raw varnish ban expression, e.g.: 'req.url ~ \.(jpg|jpeg|css|js)$'.
  *
  * @PurgeInvalidation(
  *   id = "raw",
@@ -21,3 +19,4 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
  * )
  */
 class RawInvalidation extends InvalidationBase implements InvalidationInterface {}
+ 
