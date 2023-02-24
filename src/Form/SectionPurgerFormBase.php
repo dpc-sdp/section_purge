@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge_ui\Form\PurgerConfigFormBase;
 use Drupal\section_purger\Entity\SectionPurgerSettings;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Abstract form base for HTTP based configurable purgers.
@@ -58,11 +59,14 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase
      *   The factory for configuration objects.
      * @param \Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface $purge_invalidation_factory
      *   The invalidation objects factory service.
+     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+     *   The entityTypeManager.
      */
-    public function __construct(ConfigFactoryInterface $config_factory, InvalidationsServiceInterface $purge_invalidation_factory)
+    public function __construct(ConfigFactoryInterface $config_factory, InvalidationsServiceInterface $purge_invalidation_factory, EntityTypeManagerInterface $entityTypeManager)
     {
         $this->setConfigFactory($config_factory);
         $this->purgeInvalidationFactory = $purge_invalidation_factory;
+        $this->entityTypeManager = $entityTypeManager;
     }
 
     /**
@@ -71,9 +75,10 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase
     public static function create(ContainerInterface $container)
     {
         return new static(
-      $container->get('config.factory'),
-      $container->get('purge.invalidation.factory')
-    );
+          $container->get('config.factory'),
+          $container->get('purge.invalidation.factory'),
+          $container->get('entity_type.manager')
+        );
     }
 
     /**

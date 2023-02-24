@@ -6,4 +6,4 @@ dependencies:
   - purge:purge
   - purge:purge_tokens
   - key:key
-core_version_requirement: '^9 || ^10'
+core_version_requirement: ^8.9 || ^9 || ^10
