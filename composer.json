@@ -9,5 +9,10 @@
       "type": "vcs",
       "url": "https://github.com/section/drupal-purger.git"
     }
-  ]
+  ],
+  "require": {
+    "drupal/drupal": ">=8.9 | >9.0 | <11",
+    "drupal/key": "^1.17",
+    "drupal/purge": "^3.4"
+  }
 }
