@@ -4,6 +4,6 @@
   "description": "Drupal purge module integration for Section Edge compute platform.",
   "license": "GPL-2.0-or-later",
   "require": {
-    "drupal/core": "^10.0"
+    "drupal/core": "^9 || ^10"
   }
 }
