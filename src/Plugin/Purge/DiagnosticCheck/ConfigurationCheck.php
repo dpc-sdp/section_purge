@@ -29,8 +29,7 @@ class ConfigurationCheck extends DiagnosticCheckBase implements DiagnosticCheckI
   protected $purgePurgers;
 
   /**
-   * Constructs a
-   * \Drupal\purge\Plugin\Purge\DiagnosticCheck\PurgerAvailableCheck object.
+   * Constructs a PurgerAvailableCheck object.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
@@ -76,34 +75,34 @@ class ConfigurationCheck extends DiagnosticCheckBase implements DiagnosticCheckI
     foreach ($plugins as $id => $settings) {
       $t = ['@purger' => $labels[$id]];
       foreach ([
-                 'name',
-                 'hostname',
-                 'account',
-                 'application',
-                 'username',
-                 'password',
-                 'environmentname',
-                 'port',
-                 'request_method',
-                 'scheme',
-               ] as $f) {
+        'name',
+        'hostname',
+        'account',
+        'application',
+        'username',
+        'password',
+        'environmentname',
+        'port',
+        'request_method',
+        'scheme',
+      ] as $f) {
         if (empty($settings->$f)) {
           $this->recommendation = $this->t("@purger not configured.", $t);
-          return SELF::SEVERITY_ERROR;
+          return self::SEVERITY_ERROR;
         }
       }
       if (($settings->scheme === 'https') && ($settings->port != 443)) {
         $this->recommendation = $this->t("@purger uses https:// but its port is not 443!", $t);
-        return SELF::SEVERITY_WARNING;
+        return self::SEVERITY_WARNING;
       }
       if (($settings->scheme === 'http') && ($settings->port == 443)) {
         $this->recommendation = $this->t("@purger uses http:// but its port is 443!", $t);
-        return SELF::SEVERITY_WARNING;
+        return self::SEVERITY_WARNING;
       }
     }
 
     $this->recommendation = $this->t("All purgers configured.");
-    return SELF::SEVERITY_OK;
+    return self::SEVERITY_OK;
   }
 
 }

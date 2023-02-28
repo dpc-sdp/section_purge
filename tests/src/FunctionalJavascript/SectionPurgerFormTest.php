@@ -2,8 +2,6 @@
 
 namespace Drupal\Tests\section_purger\FunctionalJavascript;
 
-use Drupal\Tests\section_purger\FunctionalJavascript\SectionPurgerFormTestBase;
-
 /**
  * Tests \Drupal\section_purger\Form\SectionPurgerForm.
  *

@@ -27,9 +27,9 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    *
    * @var array
    *
-   * @todo
-   *   Confirm if all relevant HTTP methods are covered.
-   *   http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+   * @todo Confirm if all relevant HTTP methods are covered.
+   *
+   * http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
    */
   protected $requestMethods = [
     'BAN',
@@ -88,7 +88,7 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'section_purger.configuration_form';
   }
 
@@ -213,7 +213,7 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
     ];
     for ($i = 0; $i < $form_state->get('headers_items_count'); $i++) {
       if (!isset($form['headers']['headers'][$i])) {
-        $header = isset($settings->headers[$i]) ? $settings->headers[$i] :
+        $header = $settings->headers[$i] ??
           [
             'field' => 'Section-Cache-Tags',
             'value' => '[invalidation:expression]',

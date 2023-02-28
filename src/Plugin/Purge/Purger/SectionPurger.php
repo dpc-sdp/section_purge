@@ -4,8 +4,6 @@ namespace Drupal\section_purger\Plugin\Purge\Purger;
 
 use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
-use Drupal\section_purger\Plugin\Purge\Purger\SectionPurgerBase;
-use Drupal\section_purger\Plugin\Purge\TagsHeader\CacheTagsHeaderValue;
 use Drupal\section_purger\Entity\Hash;
 
 /**
@@ -28,13 +26,14 @@ class SectionPurger extends SectionPurgerBase implements PurgerInterface {
    * {@inheritdoc}
    */
   public function invalidate(array $invalidations) {
+    // @phpcs:disable
     /* Since we implemented ::routeTypeToMethod(), this exception should not
-       ever occur because every invalidation type is routed to a respective function.
-       And when it does inevitably get called, it will throw an exception easily visible within the drupal logs.
+    ever occur because every invalidation type is routed to a respective function.
+    And when it does inevitably get called, it will throw an exception easily visible within the drupal logs.
      */
+    // @phpcs:enable
     throw new \Exception("invalidate() called on a multi-type purger which routes each invalidatiaton type to its own method. This error should never be seen.");
   }
-
 
   /**
    * {@inheritdoc}
@@ -47,8 +46,9 @@ class SectionPurger extends SectionPurgerBase implements PurgerInterface {
       $opt = $this->getOptions($token_data);
       $this->logger->debug($invalidation->getExpression());
       $exp = 'obj.http.Section-Cache-Tags ~ "' . Hash::cacheTags([$invalidation->getExpression()])[0] . '"';
-      //adds this at the end if this instance has a site name in the configuration, for multi-site pages.
-      //the ampersands are url encoded to be %26%26 in sendReq
+      // Adds this at the end if this instance has a site name in the
+      // configuration, for multi-site pages.
+      // the ampersands are url encoded to be %26%26 in sendReq.
       if ($this->getSiteName()) {
         $exp .= ' && req.http.host == "' . $this->getSiteName() . '"';
       }
@@ -57,20 +57,18 @@ class SectionPurger extends SectionPurgerBase implements PurgerInterface {
     }
   }
 
-
   /**
-   * invalidateEverything($invalidations)
+   * InvalidateEverything($invalidations).
+   *
    * This will use obj.status != 0 to ban every page that does not have an
-   * empty response
+   * empty response.
    *
    * @param array $invalidations
-   * This takes in an array of Invalidation, processing them all in a loop,
+   *   This takes in an array of Invalidation, processing them all in a loop,
    *   generally from the purge queue.
-   *
-   * @return void
    */
   public function invalidateEverything(array $invalidations) {
-    //invalidates everything within the siteName;
+    // Invalidates everything within the siteName;.
     $globalExpression = "obj.status != 0";
     foreach ($invalidations as $invalidation) {
       $invalidation->setState(InvalidationInterface::PROCESSING);
@@ -78,8 +76,9 @@ class SectionPurger extends SectionPurgerBase implements PurgerInterface {
       $uri = $this->getUri($token_data);
       $opt = $this->getOptions($token_data);
       $exp = "obj.status != 0";
-      //adds this at the end if this instance has a site name in the configuration, for multi-site pages.
-      //the ampersands are url encoded to be %26%26 in sendReq
+      // Adds this at the end if this instance has a site name in the
+      // configuration, for multi-site pages.
+      // the ampersands are url encoded to be %26%26 in sendReq.
       if ($this->getSiteName()) {
         $exp .= ' && req.http.host == "' . $this->getSiteName() . '"';
       }
@@ -88,9 +87,8 @@ class SectionPurger extends SectionPurgerBase implements PurgerInterface {
     }
   }
 
-
   /**
-   * public function routeTypeToMethod($type)
+   * Public function routeTypeToMethod($type)
    *
    * @param string $type
    *   The type of invalidation(s) about to be offered to the purger.
@@ -98,8 +96,8 @@ class SectionPurger extends SectionPurgerBase implements PurgerInterface {
    * @return string
    *   The PHP method name called on the purger with a $invalidations parameter.
    */
-
   public function routeTypeToMethod($type) {
+    // @phpcs:disable
     /*
     Purge has to be crystal clear about what needs invalidation towards its purgers,
     and therefore has the concept of invalidation types. Individual purgers declare
@@ -115,7 +113,8 @@ class SectionPurger extends SectionPurgerBase implements PurgerInterface {
     url           Invalidates by URL, e.g. http://site.com/node/1. The protocol is specific; for example if invalidating an http request, the https equivalent will not be invalidated
     wildcardpath  Invalidates by path, e.g. news/*.
     wildcardurl   Invalidates by URL, e.g. http://site.com/node/*.
-*/
+     */
+    // @phpcs:enable
     $methods = [
       'tag' => 'invalidateTags',
       'domain' => 'invalidateDomain',
@@ -127,7 +126,7 @@ class SectionPurger extends SectionPurgerBase implements PurgerInterface {
       'regex' => 'invalidateRegex',
       'raw' => 'invalidateRawExpression',
     ];
-    return isset($methods[$type]) ? $methods[$type] : 'invalidate';
+    return $methods[$type] ?? 'invalidate';
   }
 
 }

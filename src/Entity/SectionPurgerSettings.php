@@ -98,14 +98,14 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
   public $port = 443;
 
   /**
-   * Section account ID
+   * Section account ID.
    *
    * @var int
    */
   public $account = 1;
 
   /**
-   * Section application ID
+   * Section application ID.
    *
    * @var int
    */
@@ -145,6 +145,7 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var string
    */
+  // @phpcs:ignore
   public $request_method = 'POST';
 
   /**
@@ -190,6 +191,7 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var string
    */
+  // @phpcs:ignore
   public $body_content_type = 'application/json';
 
   /**
@@ -204,6 +206,7 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var bool
    */
+  // @phpcs:ignore
   public $runtime_measurement = TRUE;
 
   /**
@@ -218,6 +221,7 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var float
    */
+  // @phpcs:ignore
   public $connect_timeout = 1.0;
 
   /**
@@ -228,6 +232,7 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var float
    */
+  // @phpcs:ignore
   public $cooldown_time = 0.0;
 
   /**
@@ -239,6 +244,7 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var int
    */
+  // @phpcs:ignore
   public $max_requests = 250;
 
   /**
@@ -252,6 +258,7 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @see http://docs.guzzlephp.org/en/latest/request-options.html#http-errors
    */
+  // @phpcs:ignore
   public $http_errors = TRUE;
 
 }

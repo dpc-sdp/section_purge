@@ -4,11 +4,8 @@ namespace Drupal\section_purger\Plugin\Purge\Purger;
 
 use Drupal\section_purger\Entity\Hash;
 use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
-use Drupal\section_purger\Plugin\Purge\Purger\SectionPurger;
-use Drupal\section_purger\Plugin\Purge\Purger\SectionPurgerBase;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\section_purger\Plugin\Purge\TagsHeader\CacheTagsHeaderValue;
-use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
  * Section Bundled Purger.
@@ -31,19 +28,24 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
    */
   public function invalidate(array $invalidations) {
     /* Since we implemented ::routeTypeToMethod(), this exception should not
-    ever occur because every invalidation type is routed to a respective function.
-    And when it does inevitably get called, it will throw an exception easily visible within the drupal logs.
-    */
+    ever occur because every invalidation type is routed to a
+    respective function.
+    And when it does inevitably get called, it will throw an exception easily
+    visible within the drupal logs.
+     */
     throw new \Exception("invalidate() called on a multi-type purger which routes each invalidatiaton type to its own method. This error should never be seen.");
   }
 
   /**
-   * group(array $invalidations)
+   * Group(array $invalidations).
+   *
    * This takes an invalidations array and returns groups of 250 invalidations.
    *
    * @param array $invalidations
+   *   An array of invalidations.
    *
-   * @return $groups
+   * @return array
+   *   An array of grouped invalidations.
    */
   public function group(array $invalidations) {
     $group = 0;
@@ -79,8 +81,9 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
       $opt = $this->getOptions($token_data);
       $tags = new CacheTagsHeaderValue($group['expression'], Hash::cacheTags($group['expression']));
       $exp = 'obj.http.Section-Cache-Tags ~ "(' . str_replace(' ', '|', $tags) . ')+"';
-      //adds this at the end if this instance has a site name in the configuration, for multi-site pages.
-      //the ampersands are url encoded to be %26%26 in sendReq
+      // Adds this at the end if this instance has a site name in the
+      // configuration, for multi-site pages.
+      // the ampersands are url encoded to be %26%26 in sendReq.
       $this->logger->debug("[Tag] " . count($invalidations) . " tag invalidations were bundled to be: `" . $exp . "`");
       $this->sendReq($invalidation, $uri, $opt, $exp);
       foreach ($group['objects'] as $inv) {
@@ -95,21 +98,21 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
   }
 
   /**
-   * invalidateEverything($invalidations)
+   * InvalidateEverything($invalidations).
+   *
    * This will use obj.status != 0 to ban every page that does not have an
-   * empty response
+   * empty response.
    *
    * @param array $invalidations
-   * This takes in an array of Invalidation, and only make one purge because it
-   *   only needs to ban everything once.
-   *
-   * @return void
+   *   This takes in an array of Invalidation, and only make one purge
+   *   because it only needs to ban everything once.
    */
   public function invalidateEverything(array $invalidations) {
-    //invalidates everything within the siteName;
+    // Invalidates everything within the siteName;.
     $globalExpression = "obj.status != 0";
     $invalidation = $invalidations[0];
-    //Only make one request, but if there are multiple everything invalidations queued then it will make sure all of them get marked appropriately.
+    // Only make one request, but if there are multiple everything invalidations
+    // queued then it will make sure all of them get marked appropriately.
     foreach ($invalidations as $inv) {
       $inv->setState(InvalidationInterface::PROCESSING);
     }
@@ -118,8 +121,9 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
     $uri = $this->getUri($token_data);
     $opt = $this->getOptions($token_data);
     $exp = "obj.status != 0";
-    //adds this at the end if this instance has a site name in the configuration, for multi-site pages.
-    //the ampersands are url encoded to be %26%26 in sendReq
+    // Adds this at the end if this instance has a site name in the
+    // configuration, for multi-site pages.
+    // the ampersands are url encoded to be %26%26 in sendReq.
     if ($this->getSiteName()) {
       $exp .= ' && req.http.host == "' . $this->getSiteName() . '"';
     }
@@ -138,6 +142,7 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
   /**
    * {@inheritdoc}
    */
+  // @phpcs:ignore
   public function invalidateURLs(array $invalidations) {
     $this->logger->debug("[Domain] section does not support bundling URL purges but will pass this queue item on to the non-bundled purger.");
     parent::invalidateURLs($invalidations);
@@ -192,7 +197,7 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
   }
 
   /**
-   * public function routeTypeToMethod($type)
+   * Public function routeTypeToMethod($type)
    *
    * @param string $type
    *   The type of invalidation(s) about to be offered to the purger.
@@ -201,6 +206,7 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
    *   The PHP method name called on the purger with a $invalidations parameter.
    */
   public function routeTypeToMethod($type) {
+    // @phpcs:disable
     /*
     Purge has to be crystal clear about what needs invalidation towards its purgers,
     and therefore has the concept of invalidation types. Individual purgers declare
@@ -216,7 +222,8 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
     url           Invalidates by URL, e.g. http://site.com/node/1. The protocol is specific; for example if invalidating an http request, the https equivalent will not be invalidated
     wildcardpath  Invalidates by path, e.g. news/*.
     wildcardurl   Invalidates by URL, e.g. http://site.com/node/*.
-    */
+     */
+    // @phpcs:enable
     $methods = [
       'tag' => 'invalidateTags',
       'domain' => 'invalidateDomain',
@@ -228,7 +235,7 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
       'regex' => 'invalidateRegex',
       'raw' => 'invalidateRawExpression',
     ];
-    return isset($methods[$type]) ? $methods[$type] : 'invalidate';
+    return $methods[$type] ?? 'invalidate';
   }
 
 }

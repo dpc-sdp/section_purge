@@ -2,8 +2,6 @@
 
 namespace Drupal\section_purger\Form;
 
-use Drupal\section_purger\Form\SectionPurgerFormBase;
-
 /**
  * Configuration form for the HTTP Bundled Purger.
  */

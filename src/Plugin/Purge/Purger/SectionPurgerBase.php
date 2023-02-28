@@ -2,15 +2,14 @@
 
 namespace Drupal\section_purger\Plugin\Purge\Purger;
 
+use GuzzleHttp\Exception\ConnectException;
 use Drupal\Core\Utility\Token;
 use GuzzleHttp\ClientInterface;
-use Drupal\section_purger\Entity\Hash;
 use Drupal\purge\Plugin\Purge\Purger\PurgerBase;
 use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
 use Drupal\section_purger\Entity\SectionPurgerSettings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
-use Drupal\section_purger\Plugin\Purge\TagsHeader\CacheTagsHeaderValue;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 
 /**
@@ -74,29 +73,35 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
   }
 
   /**
-   * sendReq($invalidation,$uri,$opt)
+   * SendReq($invalidation,$uri,$opt)
+   *
    * This does all the HTTP dirty work to avoid code repetition.
    *
    * @param Invalidation $invalidation
+   *   The invalidation object.
    * @param string $uri
-   * the URL of the API endpoint
+   *   The URL of the API endpoint.
    * @param array $opt
-   * request options (ie headers)
+   *   Request options (ie headers).
    * @param string $exp
-   * the ban expression
-   *
-   * @return void
+   *   The ban expression.
    */
-  public function sendReq($invalidation, $uri, $opt, $exp) {
-    $exp = urlencode($exp); //the banExpression is sent as a parameter in the URL, so things like ampersands, asterisks, question marks, etc will break the parse
-    $uri .= $exp; //append the banExpression to the URL
+  public function sendReq(Invalidation $invalidation, $uri, array $opt, $exp) {
+    // The banExpression is sent as a parameter in the URL, so things like
+    // ampersands, asterisks, question marks, etc will break the parse.
+    $exp = urlencode($exp);
+    // Append the banExpression to the URL.
+    $uri .= $exp;
     try {
       $response = $this->client->request($this->settings->request_method, $uri, $opt);
       $invalidation->setState(InvalidationInterface::SUCCEEDED);
-    } catch (\GuzzleHttp\Exception\ConnectException $e) {
+    }
+    catch (ConnectException $e) {
       $invalidation->setState(InvalidationInterface::FAILED);
-      $this->logger->critical("http request for " . $uri . " responded with " . $e->getMessage()); //Usually timeouts or other connection issues.
-    } catch (\Exception $e) {
+      // Usually timeouts or other connection issues.
+      $this->logger->critical("http request for " . $uri . " responded with " . $e->getMessage());
+    }
+    catch (\Exception $e) {
       $invalidation->setState(InvalidationInterface::FAILED);
       // Log as much useful information as we can.
       $headers = $opt['headers'];
@@ -112,7 +117,7 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
             'headers' => $headers,
           ]
         )
-      );
+          );
       $this->logger->critical($e->getMessage() . " \ndata: " . $debug);
     }
   }
@@ -131,7 +136,6 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
     return $this->settings->cooldown_time;
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -148,7 +152,7 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
    * @return string[]
    *   Associative array with header values and field names in the key.
    */
-  protected function getHeaders($token_data) {
+  protected function getHeaders(array $token_data) {
     $headers = [];
     $headers['Content-Type'] = "application/json";
     $headers['Accept'] = "application/json";
@@ -189,7 +193,7 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
    * @return mixed[]
    *   Associative array with option/value pairs.
    */
-  protected function getOptions($token_data) {
+  protected function getOptions(array $token_data) {
     $opt = [
       'auth' => [
         $this->settings->username,
@@ -202,12 +206,12 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
       'timeout' => $this->settings->timeout,
       'headers' => $this->getHeaders($token_data),
     ];
-    /* the body is unused as everything is url encoded, so, i see no reason to include this,
-       especially since the bundled purger does not combine bodies.
+    /* the body is unused as everything is url encoded, so, i see no reason to
+    include this, especially since the bundled purger does not combine bodies.
     if (strlen($this->settings->body)) {
-      $opt['body'] = $this->token->replace($this->settings->body, $token_data);
+    $opt['body'] = $this->token->replace($this->settings->body, $token_data);
     }
-    */
+     */
     if ($this->settings->scheme === 'https') {
       $opt['verify'] = (bool) $this->settings->verify;
     }
@@ -253,7 +257,7 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
    * @return string
    *   URL string representation.
    */
-  protected function getUri($token_data) {
+  protected function getUri(array $token_data) {
     return sprintf(
       '%s://%s:%s%sapi/v1/account/%s/application/%s/environment/%s/proxy/%s/state?banExpression=',
       $this->settings->scheme,
@@ -267,10 +271,15 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
     );
   }
 
+  /**
+   * Return sitename.
+   *
+   * @return string
+   *   The sitename string.
+   */
   protected function getSiteName() {
     return $this->settings->sitename;
   }
-
 
   /**
    * {@inheritdoc}
@@ -280,18 +289,16 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
   }
 
   /**
-   * invalidateUrls(array $invalidations)
-   * This will invalidate urls. The protocol is required and
-   * this must contain the hostname, the protocol, and path (if any)
+   * This will invalidate urls.
+   *
+   * The protocol is required and this must contain the hostname, the protocol,
+   * and path (if any).
    * The protocol is specific; for example if invalidating an http request, the
-   * https equivalent will not be invalidated. e.x.:
-   * https://example.com/favicon.ico
+   * https equivalent will not be invalidated.
+   * https://example.com/favicon.ico for example.
    *
    * @param array $invalidations
-   * This takes in an array of Invalidation, processing them all in a loop,
-   *   generally from the purge queue.
-   *
-   * @return void
+   *   This takes in an array of Invalidation, processing them all in a loop.
    */
   public function invalidateUrls(array $invalidations) {
     foreach ($invalidations as $invalidation) {
@@ -305,16 +312,18 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
         $invalidation->setState(InvalidationInterface::FAILED);
         throw new InvalidExpressionException('URL Invalidation failed with ' . $invalidation->getExpression());
       }
-      //Sanitize the path
+      // Sanitize the path.
       $patterns = [
-        '/([[\]{}()+?".,\\^$|#])/' // Escape regex characters except *
-        ,
-        '/\*/',                  // Replace * with .* (for actual Varnish regex)
+      // Escape regex characters except *.
+        '/([[\]{}()+?".,\\^$|#])/',
+      // Replace * with .* (for actual Varnish regex)
+        '/\*/',
       ];
       $replace = [
-        '\\\$1' // Escape regex characters except *
-        ,
-        '.*',    // Replace * with .* (for actual Varnish regex)
+      // Escape regex characters except *.
+        '\\\$1',
+      // Replace * with .* (for actual Varnish regex)
+        '.*',
       ];
       $exp = 'req.http.X-Forwarded-Proto == "' . $parse['scheme'] . '" && ' . '" && req.http.host == "' . $parse['host'] . '" && req.url ~ "^';
       $exp .= preg_replace($patterns, $replace, substr($parse['path'], 1) . $parse['query'] . $parse['fragment']);
@@ -324,18 +333,16 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
     }
   }
 
-
   /**
-   * invalidatePaths(array $invalidations)
+   * InvalidatePaths(array $invalidations).
+   *
    * This will invalidate paths. As per the purger module guidelines,
    * this should not start with a slash, and should not contain the hostname.
-   * e.x.: favicon.ico
+   * e.x.: favicon.ico for example.
    *
    * @param array $invalidations
-   * This takes in an array of Invalidation, processing them all in a loop,
+   *   This takes in an array of Invalidation, processing them all in a loop,
    *   generally from the purge queue.
-   *
-   * @return void
    */
   public function invalidatePaths(array $invalidations) {
     foreach ($invalidations as $invalidation) {
@@ -344,25 +351,28 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
       $uri = $this->getUri($token_data);
       $opt = $this->getOptions($token_data);
 
-      //sanitize the path, stripping of regex and escaping quotes
+      // Sanitize the path, stripping of regex and escaping quotes.
       $patterns = [
         '/^\//',
-        '/([[\]{}()+?.,\\^$|#])/' // Escape regex characters except *
-        ,
-        '/\*/',                // Replace * with .* (for actual Varnish regex)
+      // Escape regex characters except *.
+        '/([[\]{}()+?.,\\^$|#])/',
+      // Replace * with .* (for actual Varnish regex)
+        '/\*/',
       ];
       $replace = [
-        ''
-        ,
-        '\\\$1'                 // Escape regex characters except *
-        ,
-        '.*',                  // Replace * with .* (for actual Varnish regex)
+        '',
+      // Escape regex characters except *.
+        '\\\$1',
+      // Replace * with .* (for actual Varnish regex)
+        '.*',
       ];
-      $exp = 'req.url ~ "^/';        // base varnish ban expression for paths
+      // Base varnish ban expression for paths.
+      $exp = 'req.url ~ "^/';
       $exp .= preg_replace($patterns, $replace, $invalidation->getExpression()) . '$"';
 
-      //adds this at the end if this instance has a site name in the configuration, for multi-site pages.
-      //the ampersands are url encoded to be %26%26 in sendReq
+      // Adds this at the end if this instance has a site name in the
+      // configuration, for multi-site pages. the ampersands are url encoded
+      // to be %26%26 in sendReq.
       if ($this->getSiteName()) {
         $exp .= ' && req.http.host == "' . $this->getSiteName() . '"';
       }
@@ -372,16 +382,15 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
   }
 
   /**
-   * invalidateDomain(array $invalidations)
+   * InvalidateDomain(array $invalidations).
+   *
    * This will invalidate a hostname.
    * This should not contain the protocol, simply the hostname
-   * e.x.: example.com
+   * example.com for example.
    *
    * @param array $invalidations
-   * This takes in an array of Invalidation, processing them all in a loop,
+   *   This takes in an array of Invalidation, processing them all in a loop,
    *   generally from the purge queue.
-   *
-   * @return void
    */
   public function invalidateDomain(array $invalidations) {
     foreach ($invalidations as $invalidation) {
@@ -389,36 +398,47 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
       $token_data = ['invalidation' => $invalidation];
       $uri = $this->getUri($token_data);
       $opt = $this->getOptions($token_data);
-      // from VarnishManageController.ts in aperture
+      // From VarnishManageController.ts in aperture.
       $exp = 'req.http.host == "' . $invalidation->getExpression() . '"';
       $this->logger->debug("[DOMAIN] expression `" . $invalidation->getExpression() . "` was replaced to be: `" . $exp . "`");
       $this->sendReq($invalidation, $uri, $opt, $exp);
     }
   }
 
-  /* Since by default invalidateURLs() has the ability to handle wildcard urls, this is just an alias.
-     This method is still necessary to exist because purge itself has certain validations for each type. */
+  /**
+   * Invalidate wildcard Urls.
+   *
+   * Since by default invalidateURLs() has the ability to handle wildcard urls,
+   * this is just an alias.
+   * This method is still necessary to exist because purge itself has certain
+   * validations for each type.
+   */
   public function invalidateWildcardUrls(array $invalidations) {
     $this->invalidateUrls($invalidations);
   }
 
-  /* Since by default invalidatePaths() has the ability to handle wildcard urls, this is just an alias.
-     This method is still necessary to exist because purge itself has certain validations for each type. */
+  /**
+   * Invalidate paths.
+   *
+   * Since by default invalidatePaths() has the ability to handle wildcard urls,
+   * this is just an alias.
+   * This method is still necessary to exist because purge itself has certain
+   * validations for each type.
+   */
   public function invalidateWildcardPaths(array $invalidations) {
     $this->invalidatePaths($invalidations);
   }
 
   /**
-   * invalidateRawExpression(array $invalidations)
+   * Invalidate Raw Expression.
+   *
    * This allows for raw varnish ban expressions.
    * e.x.: obj.status == "404" && req.url ~ node\/(?).* - would clear the cache
    * of 404'd nodes.
    *
    * @param array $invalidations
-   * This takes in an array of Invalidation, processing them all in a loop,
+   *   This takes in an array of Invalidation, processing them all in a loop,
    *   generally from the purge queue.
-   *
-   * @return void
    */
   public function invalidateRawExpression(array $invalidations) {
     foreach ($invalidations as $invalidation) {
@@ -433,18 +453,16 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
   }
 
   /**
-   * invalidateRegex(array $invalidations)
+   * InvalidateRegex(array $invalidations).
+   *
    * This allows for a regular expression match of a path.
    * e.x.: obj.status == "404" && req.url ~ "node\/(?).*" - would clear the
    * cache of 404'd nodes.
    *
    * @param array $invalidations
-   * This takes in an array of Invalidation, processing them all in a loop,
+   *   This takes in an array of Invalidation, processing them all in a loop,
    *   generally from the purge queue.
-   *
-   * @return void
    */
-
   public function invalidateRegex(array $invalidations) {
     foreach ($invalidations as $invalidation) {
       $invalidation->setState(InvalidationInterface::PROCESSING);
@@ -452,8 +470,9 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
       $uri = $this->getUri($token_data);
       $opt = $this->getOptions($token_data);
       $exp = 'req.url ~ ' . $invalidation->getExpression();
-      //adds this at the end if this instance has a site name in the configuration, for multi-site pages.
-      //the ampersands are url encoded to be %26%26 in sendReq
+      // Adds this at the end if this instance has a site name in the
+      // configuration, for multi-site pages.
+      // the ampersands are url encoded to be %26%26 in sendReq.
       if ($this->getSiteName()) {
         $exp .= "&& req.http.host == " . $this->getSiteName();
       }
