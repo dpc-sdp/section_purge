@@ -9,8 +9,7 @@ use Drupal\Tests\section_purger\FunctionalJavascript\SectionPurgerFormTestBase;
  *
  * @group section_purger
  */
-class SectionPurgerFormTest extends SectionPurgerFormTestBase
-{
+class SectionPurgerFormTest extends SectionPurgerFormTestBase {
 
   /**
    * The full class of the form being tested.
@@ -34,4 +33,5 @@ class SectionPurgerFormTest extends SectionPurgerFormTestBase
    * @see purge_tokens_token_info()
    */
   protected $tokenGroups = ['invalidation'];
+
 }

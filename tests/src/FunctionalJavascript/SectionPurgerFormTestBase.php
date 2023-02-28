@@ -7,8 +7,8 @@ use Drupal\Tests\purge_ui\FunctionalJavascript\Form\Config\PurgerConfigFormTestB
 /**
  * Testbase for testing \Drupal\section_purger\Form\SectionPurgerFormBase.
  */
-abstract class SectionPurgerFormTestBase extends PurgerConfigFormTestBase
-{
+abstract class SectionPurgerFormTestBase extends PurgerConfigFormTestBase {
+
   /**
    * Modules to enable.
    *
@@ -19,8 +19,7 @@ abstract class SectionPurgerFormTestBase extends PurgerConfigFormTestBase
   /**
    * Verify that the form contains all fields we require.
    */
-  public function testFieldExistence()
-  {
+  public function testFieldExistence() {
     $this->drupalLogin($this->adminUser);
     $this->drupalGet($this->route);
     $fields = [
@@ -35,7 +34,7 @@ abstract class SectionPurgerFormTestBase extends PurgerConfigFormTestBase
       'edit-path' => '/',
       'edit-request-method' => 0,
       'edit-scheme' => 0,
-      'edit-verify' => true,
+      'edit-verify' => TRUE,
       'edit-headers-0-field' => '',
       'edit-headers-0-value' => '',
       'edit-show-body-form' => '1',
@@ -56,8 +55,7 @@ abstract class SectionPurgerFormTestBase extends PurgerConfigFormTestBase
   /**
    * Test validating the data.
    */
-  public function testFormValidation()
-  {
+  public function testFormValidation() {
     // Assert that valid timeout values don't cause validation errors.
     $form_state = $this->getFormStateInstance();
     $form_state->addBuildInfo('args', [$this->formArgs]);
@@ -120,8 +118,7 @@ abstract class SectionPurgerFormTestBase extends PurgerConfigFormTestBase
   /**
    * Test posting data to the HTTP Purger settings form.
    */
-  public function testFormSubmit()
-  {
+  public function testFormSubmit() {
     // Assert that all (simple) fields submit as intended.
     $this->drupalLogin($this->adminUser);
     $edit = [
@@ -136,7 +133,7 @@ abstract class SectionPurgerFormTestBase extends PurgerConfigFormTestBase
       'path' => 'node/1',
       'request_method' => 1,
       'scheme' => 0,
-      'verify' => true,
+      'verify' => TRUE,
       'show_body_form' => 1,
       'body_content_type' => 'foo/bar',
       'body' => 'baz',
@@ -150,7 +147,8 @@ abstract class SectionPurgerFormTestBase extends PurgerConfigFormTestBase
     $this->drupalGet($this->route);
     $this->submitForm($edit, t('Save configuration'));
     foreach ($edit as $field => $value) {
-      $this->assertSession()->fieldValueEquals('edit-' . str_replace('_', '-', $field), $value);
+      $this->assertSession()
+        ->fieldValueEquals('edit-' . str_replace('_', '-', $field), $value);
     }
     // Assert headers behavior.
     $form = $this->getFormInstance();
@@ -163,4 +161,5 @@ abstract class SectionPurgerFormTestBase extends PurgerConfigFormTestBase
     $this->assertSession()->fieldValueEquals('edit-headers-0-field', 'foo');
     $this->assertSession()->fieldValueEquals('edit-headers-0-value', 'bar');
   }
+
 }
