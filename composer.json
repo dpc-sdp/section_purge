@@ -2,5 +2,8 @@
   "name": "drupal/section_purger",
   "type": "drupal-module",
   "description": "Drupal purge module integration for Section Edge compute platform.",
-  "license": "GPL-2.0-or-later"
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "drupal/core": "^10.0"
+  }
 }
