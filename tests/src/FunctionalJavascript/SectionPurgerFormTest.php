@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\section_purger\FunctionalJavascript;
 
+use Drupal\section_purger\Form\SectionPurgerForm;
+
 /**
  * Tests \Drupal\section_purger\Form\SectionPurgerForm.
  *
@@ -10,18 +12,14 @@ namespace Drupal\Tests\section_purger\FunctionalJavascript;
 class SectionPurgerFormTest extends SectionPurgerFormTestBase {
 
   /**
-   * The full class of the form being tested.
-   *
-   * @var string
+   * {@inheritdoc}
    */
-  protected $formClass = 'Drupal\section_purger\Form\SectionPurgerForm';
+  protected $pluginId = 'section';
 
   /**
-   * The plugin ID for which the form tested is rendered for.
-   *
-   * @var string
+   * {@inheritdoc}
    */
-  protected $plugin = 'http';
+  protected $formClass = SectionPurgerForm::class;
 
   /**
    * The token group names the form is supposed to display.
