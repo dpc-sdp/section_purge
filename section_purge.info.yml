@@ -7,4 +7,5 @@ dependencies:
   - purge:purge_tokens
   - purge_ui:purge_ui
   - key:key
+  - classy:classy
 core_version_requirement: ^10

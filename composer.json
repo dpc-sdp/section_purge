@@ -5,6 +5,7 @@
   "license": "GPL-2.0-or-later",
   "require": {
     "drupal/core": "^10",
+    "drupal/classy": "^1.0",
     "drupal/purge": "^3.4",
     "drupal/key": "^1.17"
   }
