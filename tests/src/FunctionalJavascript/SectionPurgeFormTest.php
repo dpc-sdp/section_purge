@@ -5,7 +5,7 @@ namespace Drupal\Tests\section_purge\FunctionalJavascript;
 use Drupal\section_purge\Form\SectionPurgeForm;
 
 /**
- * Tests \Drupal\section_purge\Form\SectionPurgerForm.
+ * Tests \Drupal\section_purge\Form\SectionPurgeForm.
  *
  * @group section_purge
  */
