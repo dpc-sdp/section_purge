@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\section_purger\Entity;
+namespace Drupal\section_purge\Entity;
 
 /**
  * Helper class that centralizes string hashing for security and maintenance.

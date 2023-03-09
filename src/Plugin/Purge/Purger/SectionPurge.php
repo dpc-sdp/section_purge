@@ -1,10 +1,10 @@
 <?php
 
-namespace Drupal\section_purger\Plugin\Purge\Purger;
+namespace Drupal\section_purge\Plugin\Purge\Purger;
 
 use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
-use Drupal\section_purger\Entity\Hash;
+use Drupal\section_purge\Entity\Hash;
 
 /**
  * Section Purger.
@@ -20,7 +20,7 @@ use Drupal\section_purger\Entity\Hash;
  *   "regex", "path", "domain", "raw"},
  * )
  */
-class SectionPurger extends SectionPurgerBase implements PurgerInterface {
+class SectionPurge extends SectionPurgeBase implements PurgerInterface {
 
   /**
    * {@inheritdoc}

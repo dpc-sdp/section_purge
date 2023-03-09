@@ -1,8 +1,8 @@
 <?php
 
-namespace Drupal\section_purger\Plugin\Purge\TagsHeader;
+namespace Drupal\section_purge\Plugin\Purge\TagsHeader;
 
-use Drupal\section_purger\Entity\Hash;
+use Drupal\section_purge\Entity\Hash;
 use Drupal\purge\Plugin\Purge\TagsHeader\TagsHeaderInterface;
 use Drupal\purge\Plugin\Purge\TagsHeader\TagsHeaderBase;
 

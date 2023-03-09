@@ -1,4 +1,4 @@
-section_purger.settings.*:
+section_purge.settings.*:
   type: config_entity
   label: 'Section Purger'
   mapping:
@@ -66,7 +66,7 @@ section_purger.settings.*:
       type: sequence
       translatable: false
       sequence:
-        type: section_purger_header
+        type: section_purge_header
 
     #
     # Body (request payload):

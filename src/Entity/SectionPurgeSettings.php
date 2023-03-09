@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\section_purger\Entity;
+namespace Drupal\section_purge\Entity;
 
 use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsBase;
 use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsInterface;
@@ -45,7 +45,7 @@ use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsInterface;
  *   },
  * )
  */
-class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettingsInterface {
+class SectionPurgeSettings extends PurgerSettingsBase implements PurgerSettingsInterface {
 
   /**
    * Instance metadata.

@@ -1,12 +1,12 @@
 <?php
 
-namespace Drupal\section_purger\Plugin\Purge\DiagnosticCheck;
+namespace Drupal\section_purge\Plugin\Purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase;
-use Drupal\section_purger\Entity\SectionPurgerSettings;
+use Drupal\section_purge\Entity\SectionPurgeSettings;
 
 /**
  * Verifies that only fully configured HTTP purgers load.
@@ -66,7 +66,7 @@ class ConfigurationCheck extends DiagnosticCheckBase implements DiagnosticCheckI
     $plugins = [];
     foreach ($this->purgePurgers->getPluginsEnabled() as $id => $plugin_id) {
       if (in_array($plugin_id, ['section'])) {
-        $plugins[$id] = SectionPurgerSettings::load($id);
+        $plugins[$id] = SectionPurgeSettings::load($id);
       }
     }
 

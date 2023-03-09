@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\section_purger\Plugin\Purge\Purger;
+namespace Drupal\section_purge\Plugin\Purge\Purger;
 
 use GuzzleHttp\Exception\ConnectException;
 use Drupal\Core\Utility\Token;
 use GuzzleHttp\ClientInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgerBase;
 use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
-use Drupal\section_purger\Entity\SectionPurgerSettings;
+use Drupal\section_purge\Entity\SectionPurgeSettings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
@@ -15,7 +15,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\Exception\InvalidExpressionException;
 /**
  * Abstract base class for HTTP based configurable purgers.
  */
-abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
+abstract class SectionPurgeBase extends PurgerBase implements PurgerInterface {
 
   /**
    * The Guzzle HTTP client.
@@ -27,7 +27,7 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
   /**
    * The settings entity holding all configuration.
    *
-   * @var \Drupal\section_purger\Entity\SectionPurgerSettings
+   * @var \Drupal\section_purge\Entity\SectionPurgeSettings
    */
   protected $settings;
 
@@ -54,7 +54,7 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, ClientInterface $http_client, Token $token) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->settings = SectionPurgerSettings::load($this->getId());
+    $this->settings = SectionPurgeSettings::load($this->getId());
     $this->client = $http_client;
     $this->token = $token;
   }
@@ -126,7 +126,7 @@ abstract class SectionPurgerBase extends PurgerBase implements PurgerInterface {
    * {@inheritdoc}
    */
   public function delete() {
-    SectionPurgerSettings::load($this->getId())->delete();
+    SectionPurgeSettings::load($this->getId())->delete();
   }
 
   /**

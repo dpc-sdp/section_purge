@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\section_purger\Plugin\Purge\TagsHeader;
+namespace Drupal\section_purge\Plugin\Purge\TagsHeader;
 
 /**
  * Provides simple value object for cache tag headers.

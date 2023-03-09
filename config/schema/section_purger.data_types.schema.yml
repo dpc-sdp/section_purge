@@ -1,4 +1,4 @@
-section_purger_header:
+section_purge_header:
   type: mapping
   label: 'Section Header'
   mapping:

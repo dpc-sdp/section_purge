@@ -1,11 +1,11 @@
 <?php
 
-namespace Drupal\section_purger\Form;
+namespace Drupal\section_purge\Form;
 
 /**
  * Configuration form for the HTTP Bundled Purger.
  */
-class SectionBundledPurgerForm extends SectionPurgerFormBase {
+class SectionPurgeForm extends SectionPurgeFormBase {
 
   /**
    * The token group names this purger supports replacing tokens for.
@@ -14,6 +14,6 @@ class SectionBundledPurgerForm extends SectionPurgerFormBase {
    *
    * @see purge_tokens_token_info()
    */
-  protected $tokenGroups = ['invalidations'];
+  protected $tokenGroups = ['invalidation'];
 
 }

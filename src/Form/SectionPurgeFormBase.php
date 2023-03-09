@@ -1,19 +1,19 @@
 <?php
 
-namespace Drupal\section_purger\Form;
+namespace Drupal\section_purge\Form;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge_ui\Form\PurgerConfigFormBase;
-use Drupal\section_purger\Entity\SectionPurgerSettings;
+use Drupal\section_purge\Entity\SectionPurgeSettings;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Abstract form base for HTTP based configurable purgers.
  */
-abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
+abstract class SectionPurgeFormBase extends PurgerConfigFormBase {
 
   /**
    * The service that generates invalidation objects on-demand.
@@ -89,14 +89,14 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'section_purger.configuration_form';
+    return 'section_purge.configuration_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $settings = SectionPurgerSettings::load($this->getId($form_state));
+    $settings = SectionPurgeSettings::load($this->getId($form_state));
     $form['tabs'] = ['#type' => 'vertical_tabs', '#weight' => 10];
     $this->buildFormMetadata($form, $form_state, $settings);
     $this->buildFormRequest($form, $form_state, $settings);
@@ -112,10 +112,10 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
-   * @param \Drupal\section_purger\Entity\SectionPurgerSettings $settings
+   * @param \Drupal\section_purger\Entity\SectionPurgeSettings $settings
    *   Configuration entity for the purger being configured.
    */
-  public function buildFormMetadata(array &$form, FormStateInterface $form_state, SectionPurgerSettings $settings) {
+  public function buildFormMetadata(array &$form, FormStateInterface $form_state, SectionPurgeSettings $settings) {
     $form['name'] = [
       '#title' => $this->t('Name'),
       '#type' => 'textfield',
@@ -136,10 +136,10 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
-   * @param \Drupal\section_purger\Entity\SectionPurgerSettings $settings
+   * @param \Drupal\section_purger\Entity\SectionPurgeSettings $settings
    *   Configuration entity for the purger being configured.
    */
-  public function buildFormRequest(array &$form, FormStateInterface $form_state, SectionPurgerSettings $settings) {
+  public function buildFormRequest(array &$form, FormStateInterface $form_state, SectionPurgeSettings $settings) {
     $form['request'] = [
       '#type' => 'details',
       '#group' => 'tabs',
@@ -190,10 +190,10 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
-   * @param \Drupal\section_purger\Entity\SectionPurgerSettings $settings
+   * @param \Drupal\section_purger\Entity\SectionPurgeSettings $settings
    *   Configuration entity for the purger being configured.
    */
-  public function buildFormHeaders(array &$form, FormStateInterface $form_state, SectionPurgerSettings $settings) {
+  public function buildFormHeaders(array &$form, FormStateInterface $form_state, SectionPurgeSettings $settings) {
     if (is_null($form_state->get('headers_items_count'))) {
       $value = empty($settings->headers) ? 1 : count($settings->headers);
       $form_state->set('headers_items_count', $value);
@@ -266,10 +266,10 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
-   * @param \Drupal\section_purger\Entity\SectionPurgerSettings $settings
+   * @param \Drupal\section_purger\Entity\SectionPurgeSettings $settings
    *   Configuration entity for the purger being configured.
    */
-  public function buildFormPerformance(array &$form, FormStateInterface $form_state, SectionPurgerSettings $settings) {
+  public function buildFormPerformance(array &$form, FormStateInterface $form_state, SectionPurgeSettings $settings) {
     $form['performance'] = [
       '#type' => 'details',
       '#group' => 'tabs',
@@ -362,7 +362,7 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function submitFormSuccess(array &$form, FormStateInterface $form_state) {
-    $settings = SectionPurgerSettings::load($this->getId($form_state));
+    $settings = SectionPurgeSettings::load($this->getId($form_state));
 
     // Empty 'body' when 'show_body_form' isn't checked.
     if ($form_state->getValue('show_body_form') === 0) {
