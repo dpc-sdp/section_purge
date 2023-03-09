@@ -13,7 +13,7 @@ use Drupal\section_purge\Plugin\Purge\TagsHeader\CacheTagsHeaderValue;
  * @PurgePurger(
  *   id = "sectionbundled",
  *   label = @Translation("Section Bundled Purger"),
- *   configform = "\Drupal\section_purger\Form\SectionBundledPurgerForm",
+ *   configform = "\Drupal\section_purge\Form\SectionBundledPurgeForm",
  *   cooldown_time = 0.0,
  *   description = @Translation("Configurable purger that sends a single HTTP
  *   request for a set of invalidation instructions."), multi_instance = TRUE,

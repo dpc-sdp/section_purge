@@ -1,15 +1,15 @@
 <?php
 
-namespace Drupal\Tests\section_purger\FunctionalJavascript;
+namespace Drupal\Tests\section_purge\FunctionalJavascript;
 
-use Drupal\section_purger\Form\SectionPurgerForm;
+use Drupal\section_purge\Form\SectionPurgeForm;
 
 /**
- * Tests \Drupal\section_purger\Form\SectionPurgerForm.
+ * Tests \Drupal\section_purge\Form\SectionPurgerForm.
  *
- * @group section_purger
+ * @group section_purge
  */
-class SectionPurgerFormTest extends SectionPurgerFormTestBase {
+class SectionPurgeFormTest extends SectionPurgeFormTestBase {
 
   /**
    * {@inheritdoc}
@@ -19,7 +19,7 @@ class SectionPurgerFormTest extends SectionPurgerFormTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $formClass = SectionPurgerForm::class;
+  protected $formClass = SectionPurgeForm::class;
 
   /**
    * The token group names the form is supposed to display.

@@ -12,7 +12,7 @@ use Drupal\section_purge\Entity\Hash;
  * @PurgePurger(
  *   id = "section",
  *   label = @Translation("Section Purger"),
- *   configform = "\Drupal\section_purger\Form\SectionPurgerForm",
+ *   configform = "\Drupal\section_purge\Form\SectionPurgeForm",
  *   cooldown_time = 0.2,
  *   description = @Translation("Purger that sends invalidation expressions
  *   from your Drupal instance to the Section platform."), multi_instance =

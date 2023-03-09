@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\Tests\section_purger\FunctionalJavascript;
+namespace Drupal\Tests\section_purge\FunctionalJavascript;
 
 use Drupal\Tests\purge_ui\FunctionalJavascript\Form\Config\PurgerConfigFormTestBase;
 
 /**
  * Testbase for testing \Drupal\section_purger\Form\SectionPurgerFormBase.
  */
-abstract class SectionPurgerFormTestBase extends PurgerConfigFormTestBase {
+abstract class SectionPurgeFormTestBase extends PurgerConfigFormTestBase {
 
   /**
    * Modules to enable.
