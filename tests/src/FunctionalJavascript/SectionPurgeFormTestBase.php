@@ -5,7 +5,7 @@ namespace Drupal\Tests\section_purge\FunctionalJavascript;
 use Drupal\Tests\purge_ui\FunctionalJavascript\Form\Config\PurgerConfigFormTestBase;
 
 /**
- * Testbase for testing \Drupal\section_purger\Form\SectionPurgerFormBase.
+ * Testbase for testing \Drupal\section_purge\Form\SectionPurgerFormBase.
  */
 abstract class SectionPurgeFormTestBase extends PurgerConfigFormTestBase {
 
@@ -14,7 +14,7 @@ abstract class SectionPurgeFormTestBase extends PurgerConfigFormTestBase {
    *
    * @var array
    */
-  protected static $modules = ['section_purger', 'purge_ui'];
+  protected static $modules = ['section_purge', 'purge_ui'];
 
   /**
    * {@inheritdoc}
