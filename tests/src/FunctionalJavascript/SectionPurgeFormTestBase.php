@@ -17,6 +17,13 @@ abstract class SectionPurgeFormTestBase extends PurgerConfigFormTestBase {
   protected static $modules = ['section_purger', 'purge_ui'];
 
   /**
+   * {@inheritdoc}
+   *
+   * Classy is deprecated, but needed to make working with dialogs possible.
+   */
+  protected $defaultTheme = 'starterkit_theme';
+
+  /**
    * Verify that form shows up
    */
   public function testSaveConfigurationSubmit(): void {
