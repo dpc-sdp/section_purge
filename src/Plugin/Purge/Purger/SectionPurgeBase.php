@@ -86,7 +86,7 @@ abstract class SectionPurgeBase extends PurgerBase implements PurgerInterface {
    * @param string $exp
    *   The ban expression.
    */
-  public function sendReq(Invalidation $invalidation, $uri, array $opt, $exp) {
+  public function sendReq(InvalidationInterface $invalidation, $uri, array $opt, $exp) {
     // The banExpression is sent as a parameter in the URL, so things like
     // ampersands, asterisks, question marks, etc will break the parse.
     $exp = urlencode($exp);
