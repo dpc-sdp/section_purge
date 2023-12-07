@@ -1,21 +1,24 @@
 <?php
 
-namespace Drupal\section_purger\Plugin\Purge\TagsHeader;
+namespace Drupal\section_purge\Plugin\Purge\TagsHeader;
 
 /**
  * Provides simple value object for cache tag headers.
  */
 class CacheTagsHeaderValue {
+
   /**
    * String: separation character used.
    */
   const SEPARATOR = ' ';
+
   /**
    * List of original cache tags.
    *
    * @var string[]
    */
   protected $tags = [];
+
   /**
    * List of hashed cache tags.
    *

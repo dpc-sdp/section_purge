@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\section_purger\Plugin\Purge\Invalidation;
+namespace Drupal\section_purge\Plugin\Purge\Invalidation;
 
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
@@ -20,4 +20,6 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationBase;
  *   expression_must_be_string = TRUE
  * )
  */
-class RawInvalidation extends InvalidationBase implements InvalidationInterface {}
+class RawInvalidation extends InvalidationBase implements InvalidationInterface {
+
+}

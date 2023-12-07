@@ -1,0 +1,10 @@
+section_purge_header:
+  type: mapping
+  label: 'Section Header'
+  mapping:
+    field:
+      type: string
+      translatable: false
+    value:
+      type: string
+      translatable: false

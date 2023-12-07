@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\section_purger\Entity;
+namespace Drupal\section_purge\Entity;
 
 use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsBase;
 use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsInterface;
@@ -15,37 +15,37 @@ use Drupal\purge\Plugin\Purge\Purger\PurgerSettingsInterface;
  *   static_cache = TRUE,
  *   entity_keys = {"id" = "id"},
  *   config_export = {
+ *     "id",
+ *     "label",
+ *     "description",
+ *     "name",
+ *     "invalidationtype",
+ *     "hostname",
+ *     "sitename",
+ *     "port",
+ *     "path",
  *     "account",
  *     "application",
- *     "body",
- *     "bodyContentType",
- *     "connectTimeout",
- *     "cooldownTime",
- *     "description",
  *     "environmentname",
- *     "headers",
- *     "hostname",
- *     "httpErrors",
- *     "id",
- *     "invalidationtype",
- *     "label",
- *     "maxRequests",
- *     "name",
- *     "password",
- *     "path",
- *     "port",
- *     "requestMethod",
- *     "runtimeMeasurement",
- *     "scheme",
- *     "sitename",
- *     "timeout",
  *     "username",
+ *     "password",
+ *     "request_method",
+ *     "scheme",
+ *     "verify",
  *     "varnishname",
- *     "verify"
+ *     "headers",
+ *     "body",
+ *     "body_content_type",
+ *     "runtime_measurement",
+ *     "timeout",
+ *     "connect_timeout",
+ *     "cooldown_time",
+ *     "max_requests",
+ *     "http_errors"
  *   },
  * )
  */
-class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettingsInterface {
+class SectionPurgeSettings extends PurgerSettingsBase implements PurgerSettingsInterface {
 
   /**
    * Instance metadata.
@@ -111,6 +111,7 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    */
   public $application = 100;
 
+
   /**
    * Section environment name i.e. Production, Staging, etc.
    *
@@ -144,7 +145,8 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var string
    */
-  public $requestMethod = 'POST';
+  // @phpcs:ignore
+  public $request_method = 'POST';
 
   /**
    * The HTTP scheme.
@@ -189,7 +191,8 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var string
    */
-  public $bodyContentType = 'application/json';
+  // @phpcs:ignore
+  public $body_content_type = 'application/json';
 
   /**
    * Performance settings.
@@ -199,11 +202,12 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    * Runtime measurement.
    *
    * When FALSE, dynamic capacity calculation will be disabled and based upon
-   * the connectTimeout and timeout settings.
+   * the connect_timeout and timeout settings.
    *
    * @var bool
    */
-  public $runtimeMeasurement = TRUE;
+  // @phpcs:ignore
+  public $runtime_measurement = TRUE;
 
   /**
    * The timeout of the request in seconds.
@@ -217,7 +221,8 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var float
    */
-  public $connectTimeout = 1.0;
+  // @phpcs:ignore
+  public $connect_timeout = 1.0;
 
   /**
    * Cooldown time.
@@ -227,7 +232,8 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var float
    */
-  public $cooldownTime = 0.0;
+  // @phpcs:ignore
+  public $cooldown_time = 0.0;
 
   /**
    * Maximum requests.
@@ -238,7 +244,8 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @var int
    */
-  public $maxRequests = 250;
+  // @phpcs:ignore
+  public $max_requests = 250;
 
   /**
    * Success resolution.
@@ -251,6 +258,7 @@ class SectionPurgerSettings extends PurgerSettingsBase implements PurgerSettings
    *
    * @see http://docs.guzzlephp.org/en/latest/request-options.html#http-errors
    */
-  public $httpErrors = TRUE;
+  // @phpcs:ignore
+  public $http_errors = TRUE;
 
 }

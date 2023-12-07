@@ -1,19 +1,19 @@
 <?php
 
-namespace Drupal\section_purger\Form;
+namespace Drupal\section_purge\Form;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationsServiceInterface;
 use Drupal\purge_ui\Form\PurgerConfigFormBase;
-use Drupal\section_purger\Entity\SectionPurgerSettings;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\section_purge\Entity\SectionPurgeSettings;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Abstract form base for HTTP based configurable purgers.
  */
-abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
+abstract class SectionPurgeFormBase extends PurgerConfigFormBase {
 
   /**
    * The service that generates invalidation objects on-demand.
@@ -28,6 +28,7 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    * @var array
    *
    * @todo Confirm if all relevant HTTP methods are covered.
+   *
    * http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
    */
   protected $requestMethods = [
@@ -71,10 +72,10 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-        $container->get('config.factory'),
-        $container->get('purge.invalidation.factory'),
-        $container->get('entity_type.manager')
-      );
+      $container->get('config.factory'),
+      $container->get('purge.invalidation.factory'),
+      $container->get('entity_type.manager')
+    );
   }
 
   /**
@@ -88,14 +89,14 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'section_purger.configuration_form';
+    return 'section_purge.configuration_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $settings = SectionPurgerSettings::load($this->getId($form_state));
+    $settings = SectionPurgeSettings::load($this->getId($form_state));
     $form['tabs'] = ['#type' => 'vertical_tabs', '#weight' => 10];
     $this->buildFormMetadata($form, $form_state, $settings);
     $this->buildFormRequest($form, $form_state, $settings);
@@ -111,10 +112,10 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
-   * @param \Drupal\section_purger\Entity\SectionPurgerSettings $settings
+   * @param \Drupal\section_purger\Entity\SectionPurgeSettings $settings
    *   Configuration entity for the purger being configured.
    */
-  public function buildFormMetadata(array &$form, FormStateInterface $form_state, SectionPurgerSettings $settings) {
+  public function buildFormMetadata(array &$form, FormStateInterface $form_state, SectionPurgeSettings $settings) {
     $form['name'] = [
       '#title' => $this->t('Name'),
       '#type' => 'textfield',
@@ -135,10 +136,10 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
-   * @param \Drupal\section_purger\Entity\SectionPurgerSettings $settings
+   * @param \Drupal\section_purger\Entity\SectionPurgeSettings $settings
    *   Configuration entity for the purger being configured.
    */
-  public function buildFormRequest(array &$form, FormStateInterface $form_state, SectionPurgerSettings $settings) {
+  public function buildFormRequest(array &$form, FormStateInterface $form_state, SectionPurgeSettings $settings) {
     $form['request'] = [
       '#type' => 'details',
       '#group' => 'tabs',
@@ -189,10 +190,10 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
-   * @param \Drupal\section_purger\Entity\SectionPurgerSettings $settings
+   * @param \Drupal\section_purger\Entity\SectionPurgeSettings $settings
    *   Configuration entity for the purger being configured.
    */
-  public function buildFormHeaders(array &$form, FormStateInterface $form_state, SectionPurgerSettings $settings) {
+  public function buildFormHeaders(array &$form, FormStateInterface $form_state, SectionPurgeSettings $settings) {
     if (is_null($form_state->get('headers_items_count'))) {
       $value = empty($settings->headers) ? 1 : count($settings->headers);
       $form_state->set('headers_items_count', $value);
@@ -212,7 +213,7 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
     ];
     for ($i = 0; $i < $form_state->get('headers_items_count'); $i++) {
       if (!isset($form['headers']['headers'][$i])) {
-        $header = isset($settings->headers[$i]) ??
+        $header = $settings->headers[$i] ??
           [
             'field' => 'Section-Cache-Tags',
             'value' => '[invalidation:expression]',
@@ -265,45 +266,45 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    *   An associative array containing the structure of the form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
-   * @param \Drupal\section_purger\Entity\SectionPurgerSettings $settings
+   * @param \Drupal\section_purger\Entity\SectionPurgeSettings $settings
    *   Configuration entity for the purger being configured.
    */
-  public function buildFormPerformance(array &$form, FormStateInterface $form_state, SectionPurgerSettings $settings) {
+  public function buildFormPerformance(array &$form, FormStateInterface $form_state, SectionPurgeSettings $settings) {
     $form['performance'] = [
       '#type' => 'details',
       '#group' => 'tabs',
       '#title' => $this->t('Performance'),
     ];
-    $form['performance']['cooldownTime'] = [
+    $form['performance']['cooldown_time'] = [
       '#type' => 'number',
       '#step' => 0.1,
       '#min' => 0.0,
       '#max' => 3.0,
       '#title' => $this->t('Cooldown time'),
-      '#default_value' => $settings->cooldownTime,
+      '#default_value' => $settings->cooldown_time,
       '#required' => TRUE,
       '#description' => $this->t('Number of seconds to wait after a group of HTTP requests (so that other purgers get fresh content)'),
     ];
-    $form['performance']['maxRequests'] = [
+    $form['performance']['max_requests'] = [
       '#type' => 'number',
       '#step' => 1,
       '#min' => 1,
       '#max' => 500,
       '#title' => $this->t('Maximum requests'),
-      '#default_value' => $settings->maxRequests,
+      '#default_value' => $settings->max_requests,
       '#required' => TRUE,
       '#description' => $this->t("Maximum number of HTTP requests that can be made during Drupal's execution lifetime. Usually PHP resource restraints lower this value dynamically, but can be met at the CLI."),
     ];
-    $form['performance']['runtimeMeasurement'] = [
+    $form['performance']['runtime_measurement'] = [
       '#title' => $this->t('Runtime measurement'),
       '#type' => 'checkbox',
-      '#default_value' => $settings->runtimeMeasurement,
+      '#default_value' => $settings->runtime_measurement,
     ];
-    $form['performance']['runtimeMeasurement_help'] = [
+    $form['performance']['runtime_measurement_help'] = [
       '#type' => 'item',
       '#states' => [
         'visible' => [
-          ':input[name="runtimeMeasurement"]' => ['checked' => FALSE],
+          ':input[name="runtime_measurement"]' => ['checked' => FALSE],
         ],
       ],
       '#description' => $this->t('When you uncheck this setting, capacity will be based on the sum of both timeouts. By default, capacity will automatically adjust (up and down) based on measured time data.'),
@@ -318,22 +319,22 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
       '#required' => TRUE,
       '#states' => [
         'visible' => [
-          ':input[name="runtimeMeasurement"]' => ['checked' => FALSE],
+          ':input[name="runtime_measurement"]' => ['checked' => FALSE],
         ],
       ],
       '#description' => $this->t('The timeout of the request in seconds.'),
     ];
-    $form['performance']['connectTimeout'] = [
+    $form['performance']['connect_timeout'] = [
       '#type' => 'number',
       '#step' => 0.1,
       '#min' => 0.1,
       '#max' => 4.0,
       '#title' => $this->t('Connection timeout'),
-      '#default_value' => $settings->connectTimeout,
+      '#default_value' => $settings->connect_timeout,
       '#required' => TRUE,
       '#states' => [
         'visible' => [
-          ':input[name="runtimeMeasurement"]' => ['checked' => FALSE],
+          ':input[name="runtime_measurement"]' => ['checked' => FALSE],
         ],
       ],
       '#description' => $this->t('The number of seconds to wait while trying to connect to a server.'),
@@ -346,13 +347,13 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
 
     // Validate that our timeouts stay between the boundaries purge demands.
-    $timeout = $form_state->getValue('connectTimeout') + $form_state->getValue('timeout');
+    $timeout = $form_state->getValue('connect_timeout') + $form_state->getValue('timeout');
     if ($timeout > 10) {
-      $form_state->setErrorByName('connectTimeout');
+      $form_state->setErrorByName('connect_timeout');
       $form_state->setErrorByName('timeout', $this->t('The sum of both timeouts cannot be higher than 10.00 as this would affect performance too negatively.'));
     }
     elseif ($timeout < 0.4) {
-      $form_state->setErrorByName('connectTimeout');
+      $form_state->setErrorByName('connect_timeout');
       $form_state->setErrorByName('timeout', $this->t('The sum of both timeouts cannot be lower as 0.4 as this can lead to too many failures under real usage conditions.'));
     }
   }
@@ -361,7 +362,7 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
    * {@inheritdoc}
    */
   public function submitFormSuccess(array &$form, FormStateInterface $form_state) {
-    $settings = SectionPurgerSettings::load($this->getId($form_state));
+    $settings = SectionPurgeSettings::load($this->getId($form_state));
 
     // Empty 'body' when 'show_body_form' isn't checked.
     if ($form_state->getValue('show_body_form') === 0) {
@@ -379,12 +380,12 @@ abstract class SectionPurgerFormBase extends PurgerConfigFormBase {
       $form_state->setValue('headers', $headers);
     }
 
-    // Rewrite 'scheme' and 'requestMethod' to have the right CMI values.
+    // Rewrite 'scheme' and 'request_method' to have the right CMI values.
     if (!is_null($scheme = $form_state->getValue('scheme'))) {
       $form_state->setValue('scheme', $this->schemes[$scheme]);
     }
-    if (!is_null($method = $form_state->getValue('requestMethod'))) {
-      $form_state->setValue('requestMethod', $this->requestMethods[$method]);
+    if (!is_null($method = $form_state->getValue('request_method'))) {
+      $form_state->setValue('request_method', $this->requestMethods[$method]);
     }
 
     // Iterate the config object and overwrite values found in the form state.

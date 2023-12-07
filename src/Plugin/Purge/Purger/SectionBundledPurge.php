@@ -1,11 +1,11 @@
 <?php
 
-namespace Drupal\section_purger\Plugin\Purge\Purger;
+namespace Drupal\section_purge\Plugin\Purge\Purger;
 
-use Drupal\section_purger\Entity\Hash;
+use Drupal\section_purge\Entity\Hash;
 use Drupal\purge\Plugin\Purge\Purger\PurgerInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
-use Drupal\section_purger\Plugin\Purge\TagsHeader\CacheTagsHeaderValue;
+use Drupal\section_purge\Plugin\Purge\TagsHeader\CacheTagsHeaderValue;
 
 /**
  * Section Bundled Purger.
@@ -13,38 +13,39 @@ use Drupal\section_purger\Plugin\Purge\TagsHeader\CacheTagsHeaderValue;
  * @PurgePurger(
  *   id = "sectionbundled",
  *   label = @Translation("Section Bundled Purger"),
- *   configform = "\Drupal\section_purger\Form\SectionBundledPurgerForm",
- *   cooldownTime = 0.0,
- *   description = @Translation("Configurable purger that sends a single HTTP request for a set of invalidation instructions."),
- *   multi_instance = TRUE,
- *   types = {"url", "raw", "wildcardurl", "tag", "everything",
- *   "wildcardpath", "regex", "path", "domain"},
+ *   configform = "\Drupal\section_purge\Form\SectionBundledPurgeForm",
+ *   cooldown_time = 0.0,
+ *   description = @Translation("Configurable purger that sends a single HTTP
+ *   request for a set of invalidation instructions."), multi_instance = TRUE,
+ *   types = {"url", "raw", "wildcardurl", "tag", "everything", "wildcardpath",
+ *   "regex", "path", "domain"},
  * )
  */
-class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface {
+class SectionBundledPurge extends SectionPurgeBase implements PurgerInterface {
 
   /**
    * {@inheritdoc}
    */
   public function invalidate(array $invalidations) {
     /* Since we implemented ::routeTypeToMethod(), this exception should not
-    ever occur because every invalidation type is routed to
-    a respective function. And when it does inevitably get called,
-    it will throw an exception easily visible within the drupal logs.
+    ever occur because every invalidation type is routed to a
+    respective function.
+    And when it does inevitably get called, it will throw an exception easily
+    visible within the drupal logs.
      */
     throw new \Exception("invalidate() called on a multi-type purger which routes each invalidatiaton type to its own method. This error should never be seen.");
   }
 
   /**
-   * Gets an invalidations array and returns groups of 250 invalidations.
+   * Group(array $invalidations).
    *
-   * Group(array $invalidations)
+   * This takes an invalidations array and returns groups of 250 invalidations.
    *
    * @param array $invalidations
-   *   The array of invalidations.
+   *   An array of invalidations.
    *
-   * @return groups
-   *   Returns a group of invalitations.
+   * @return array
+   *   An array of grouped invalidations.
    */
   public function group(array $invalidations) {
     $group = 0;
@@ -97,23 +98,21 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
   }
 
   /**
-   * Invalidates everything within the siteName.
+   * InvalidateEverything($invalidations).
    *
-   * InvalidateEverything($invalidations)
-   * This will use obj.status != 0 to ban every page that
-   * does not have an empty response.
+   * This will use obj.status != 0 to ban every page that does not have an
+   * empty response.
    *
    * @param array $invalidations
-   *   This takes in an array of Invalidation, and only make one purge because
-   *   it only needs to ban everything once.
+   *   This takes in an array of Invalidation, and only make one purge
+   *   because it only needs to ban everything once.
    */
   public function invalidateEverything(array $invalidations) {
     // Invalidates everything within the siteName;.
-    // $globalExpression = "obj.status != 0";.
+    $globalExpression = "obj.status != 0";
     $invalidation = $invalidations[0];
-    // Only make one request, but if there are multiple everything
-    // invalidations queued then it will make sure all of them get
-    // marked appropriately.
+    // Only make one request, but if there are multiple everything invalidations
+    // queued then it will make sure all of them get marked appropriately.
     foreach ($invalidations as $inv) {
       $inv->setState(InvalidationInterface::PROCESSING);
     }
@@ -122,8 +121,8 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
     $uri = $this->getUri($token_data);
     $opt = $this->getOptions($token_data);
     $exp = "obj.status != 0";
-    // Adds this at the end if this instance has a site name in
-    // the configuration, for multi-site pages.
+    // Adds this at the end if this instance has a site name in the
+    // configuration, for multi-site pages.
     // the ampersands are url encoded to be %26%26 in sendReq.
     if ($this->getSiteName()) {
       $exp .= ' && req.http.host == "' . $this->getSiteName() . '"';
@@ -143,9 +142,10 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
   /**
    * {@inheritdoc}
    */
-  public function invalidateUrls(array $invalidations) {
+  // @phpcs:ignore
+  public function invalidateURLs(array $invalidations) {
     $this->logger->debug("[Domain] section does not support bundling URL purges but will pass this queue item on to the non-bundled purger.");
-    parent::invalidateUrls($invalidations);
+    parent::invalidateURLs($invalidations);
   }
 
   /**
@@ -206,42 +206,36 @@ class SectionBundledPurger extends SectionPurgerBase implements PurgerInterface 
    *   The PHP method name called on the purger with a $invalidations parameter.
    */
   public function routeTypeToMethod($type) {
+    // @phpcs:disable
     /*
-    Purge has to be crystal clear about what needs invalidation towards
-    its purgers, and therefore has the concept of invalidation types.
-    Individual purgers declare which types they support and can even
-    declare their own types when that makes sense.
-    Since Drupal invalidates its own caches using cache tags, the tag
-    type is the most important one to support in your architecture.
-    (and is supported, and required)
+    Purge has to be crystal clear about what needs invalidation towards its purgers,
+    and therefore has the concept of invalidation types. Individual purgers declare
+    which types they support and can even declare their own types when that makes sense.
+    Since Drupal invalidates its own caches using cache tags, the tag type is the most
+    important one to support in your architecture. (and is supported, and required)
 
     domain        Invalidates an entire domain name.
     everything    Invalidates everything.
-    path          Invalidates by path, e.g. news/article-1.
-    This should not start with a slash, and should not contain the hostname.
-    regex         This doesn't actually invalidate by regular expression.
-    It allows for varnish ban expressions. e.g. obj.status == 404 &&
-    req.url ~ node\/(?).* !!!!!!!!!!!!!!! Invalidates by regular expression,
-    e.g.: \.(jpg|jpeg|css|js)$.
+    path          Invalidates by path, e.g. news/article-1. This should not start with a slash, and should not contain the hostname.
+    regex         This doesn't actually invalidate by regular expression. it allows for varnish ban expressions. e.g. obj.status == 404 && req.url ~ node\/(?).* !!!!!!!!!!!!!!! Invalidates by regular expression, e.g.: \.(jpg|jpeg|css|js)$.
     tag           Invalidates by Drupal cache tag, e.g.: menu:footer.
-    url           Invalidates by URL, e.g. http://site.com/node/1.
-    The protocol is specific; for example if invalidating an http request,
-    the https equivalent will not be invalidated
+    url           Invalidates by URL, e.g. http://site.com/node/1. The protocol is specific; for example if invalidating an http request, the https equivalent will not be invalidated
     wildcardpath  Invalidates by path, e.g. news/*.
     wildcardurl   Invalidates by URL, e.g. http://site.com/node/*.
      */
+    // @phpcs:enable
     $methods = [
-      'tag'          => 'invalidateTags',
-      'domain'       => 'invalidateDomain',
-      'url'          => 'invalidateUrls',
-      'wildcardurl'  => 'invalidateWildcardUrls',
-      'everything'   => 'invalidateEverything',
+      'tag' => 'invalidateTags',
+      'domain' => 'invalidateDomain',
+      'url' => 'invalidateUrls',
+      'wildcardurl' => 'invalidateWildcardUrls',
+      'everything' => 'invalidateEverything',
       'wildcardpath' => 'invalidateWildcardPaths',
-      'path'         => 'invalidatePaths',
-      'regex'        => 'invalidateRegex',
-      'raw'          => 'invalidateRawExpression',
+      'path' => 'invalidatePaths',
+      'regex' => 'invalidateRegex',
+      'raw' => 'invalidateRawExpression',
     ];
-    return isset($methods[$type]) ?? 'invalidate';
+    return $methods[$type] ?? 'invalidate';
   }
 
 }

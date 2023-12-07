@@ -1,12 +1,12 @@
 <?php
 
-namespace Drupal\section_purger\Plugin\Purge\DiagnosticCheck;
+namespace Drupal\section_purge\Plugin\Purge\DiagnosticCheck;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgersServiceInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase;
-use Drupal\section_purger\Entity\SectionPurgerSettings;
+use Drupal\section_purge\Entity\SectionPurgeSettings;
 
 /**
  * Verifies that only fully configured HTTP purgers load.
@@ -14,9 +14,9 @@ use Drupal\section_purger\Entity\SectionPurgerSettings;
  * @PurgeDiagnosticCheck(
  *   id = "sectionconfiguration",
  *   title = @Translation("Section"),
- *   description = @Translation("Verifies that only fully configured Section purgers load."),
- *   dependent_queue_plugins = {},
- *   dependent_purger_plugins = {"section"}
+ *   description = @Translation("Verifies that only fully configured Section
+ *   purgers load."), dependent_queue_plugins = {}, dependent_purger_plugins =
+ *   {"section"}
  * )
  */
 class ConfigurationCheck extends DiagnosticCheckBase implements DiagnosticCheckInterface {
@@ -50,10 +50,10 @@ class ConfigurationCheck extends DiagnosticCheckBase implements DiagnosticCheckI
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
-    $configuration,
-    $plugin_id,
-    $plugin_definition,
-    $container->get('purge.purgers')
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('purge.purgers')
     );
   }
 
@@ -66,7 +66,7 @@ class ConfigurationCheck extends DiagnosticCheckBase implements DiagnosticCheckI
     $plugins = [];
     foreach ($this->purgePurgers->getPluginsEnabled() as $id => $plugin_id) {
       if (in_array($plugin_id, ['section'])) {
-        $plugins[$id] = SectionPurgerSettings::load($id);
+        $plugins[$id] = SectionPurgeSettings::load($id);
       }
     }
 
@@ -83,7 +83,7 @@ class ConfigurationCheck extends DiagnosticCheckBase implements DiagnosticCheckI
         'password',
         'environmentname',
         'port',
-        'requestMethod',
+        'request_method',
         'scheme',
       ] as $f) {
         if (empty($settings->$f)) {

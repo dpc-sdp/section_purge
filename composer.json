@@ -1,13 +1,11 @@
 {
-  "name": "drupal/section_purger",
+  "name": "drupal/section_purge",
   "type": "drupal-module",
   "description": "Drupal purge module integration for Section Edge compute platform.",
   "license": "GPL-2.0-or-later",
-  "minimum-stability": "dev",
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/section/drupal-purger.git"
-    }
-  ]
+  "require": {
+    "drupal/core": "^10",
+    "drupal/purge": "^3.4",
+    "drupal/key": "^1.17"
+  }
 }
