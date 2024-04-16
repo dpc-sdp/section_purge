@@ -1,0 +1,6 @@
+services:
+  section_purger.commands:
+    class: \Drupal\section_purge\Commands\SectionPurgerCommands
+    tags:
+      - { name: drush.command }
+    arguments: [ ]

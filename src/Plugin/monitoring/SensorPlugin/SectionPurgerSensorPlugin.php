@@ -1,12 +1,12 @@
 <?php
 
-namespace Drupal\section_purger\Plugin\monitoring\SensorPlugin;
+namespace Drupal\section_purge\Plugin\monitoring\SensorPlugin;
 
 use Drupal\key\KeyRepositoryInterface;
 use Drupal\monitoring\Entity\SensorConfig;
 use Drupal\monitoring\Result\SensorResultInterface;
 use Drupal\monitoring\SensorPlugin\SensorPluginBase;
-use Drupal\section_purger\Entity\SectionPurgerSettings;
+use Drupal\section_purge\Entity\SectionPurgeSettings;
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\monitoring\SensorPlugin\SensorPluginInterface;
@@ -88,7 +88,7 @@ class SectionPurgerSensorPlugin extends SensorPluginBase implements SensorPlugin
    * @return string
    *   The section URI.
    */
-  protected function getUri(SectionPurgerSettings $settings) {
+  protected function getUri(SectionPurgeSettings $settings) {
     return sprintf(
       '%s://%s:%s/api/v1/account/%s/application/%s/environment/%s',
       $settings->scheme,
@@ -103,12 +103,12 @@ class SectionPurgerSensorPlugin extends SensorPluginBase implements SensorPlugin
   /**
    * Get request options.
    *
-   * @param \Drupal\section_purger\Entity\SectionPurgerSettings $settings
+   * @param \Drupal\section_purger\Entity\SectionPurgeSettings $settings
    *   The purger settings.
    *
    * @param
    */
-  protected function getOptions(SectionPurgerSettings $settings) {
+  protected function getOptions(SectionPurgeSettings $settings) {
     $opt = [
       'auth' => [$settings->username, $this->keyRepository->getKey($settings->password)->getKeyValue()],
       'connect_timeout' => $settings->connect_timeout,
@@ -122,7 +122,7 @@ class SectionPurgerSensorPlugin extends SensorPluginBase implements SensorPlugin
    * {@inheritdoc}
    */
   public function runSensor(SensorResultInterface $sensor_result) {
-    $purgers = SectionPurgerSettings::loadMultiple();
+    $purgers = SectionPurgeSettings::loadMultiple();
     $purger = reset($purgers);
 
     if (empty($purger)) {
