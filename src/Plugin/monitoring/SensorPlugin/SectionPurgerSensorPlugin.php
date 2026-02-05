@@ -17,6 +17,7 @@ use Drupal\monitoring\SensorPlugin\SensorPluginInterface;
  *
  * @SensorPlugin(
  *   id = "section_purger",
+ *   addable = false,
  *   label = @Translation("Section Purger Sensor"),
  *   description = @Translation("Monitors connectivity to the Section API"),
  * )
